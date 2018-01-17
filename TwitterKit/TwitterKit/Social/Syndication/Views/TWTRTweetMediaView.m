@@ -420,6 +420,10 @@ static const CGFloat TWTRImageCornerRadius = 4.0;
 
 - (void)presentMediaViewController:(UIViewController<TWTRMediaContainerPresentable> *)mediaViewController fromView:(UIView *)view presentingViewController:(UIViewController *)presentingViewController
 {
+    if (mediaViewController == nil) {
+        return;
+    }
+
     TWTRMediaContainerViewController *mediaContainer = [[TWTRMediaContainerViewController alloc] initWithMediaViewController:mediaViewController];
 
     // Delay this for a short moment to avoid flickering when showing the view.
