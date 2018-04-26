@@ -336,7 +336,7 @@ static void *TSETweetTextKVOCOntext = &TSETweetTextKVOCOntext;
 #endif
         [self.scrollView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor].active = YES;
         [self.scrollView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
-
+        
         self.contentView.translatesAutoresizingMaskIntoConstraints = NO;
 
         [self.contentView.topAnchor constraintEqualToAnchor:self.scrollView.topAnchor].active = YES;
@@ -357,7 +357,7 @@ static void *TSETweetTextKVOCOntext = &TSETweetTextKVOCOntext;
 
         [self.tweetTextViewContainer addObserver:self
                                       forKeyPath:NSStringFromSelector(@selector(bounds))
-                                         options:NSKeyValueObservingOptionNew
+                                         options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                                          context:TWTRSETweetTextViewContainerBoundsSizeKVOContext];
         self.registeredForTweetTextViewContainerBoundsSizeKVO = YES;
 
@@ -486,9 +486,32 @@ static void *TSETweetTextKVOCOntext = &TSETweetTextKVOCOntext;
 
 #pragma mark - KVO
 
+- (BOOL)compareSize:(CGSize)size withSize:(CGSize)size2 {
+    if (floor(size.width) == floor(size2.width) &&
+        floor(size.height) == floor(size2.height))
+    {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
+    // iPhone X gets into a infinite loop of updating TWTRSETweetTextViewContainer bounds when presenting content that would exceed the size of the
+    // available bounds of the parent. This needs to be short circuited if the values are very similar
+    if (context == TWTRSETweetTextViewContainerBoundsSizeKVOContext)
+    {
+        CGRect old = [[change objectForKey:NSKeyValueChangeOldKey] CGRectValue];
+        CGRect new = [[change objectForKey:NSKeyValueChangeNewKey] CGRectValue];
+
+        if ([self compareSize:old.size withSize:new.size]) {
+            return;
+        }
+    }
+
     if (context == TWTRSETableViewContentSizeKVOContext || context == TWTRSETweetTextViewContainerBoundsSizeKVOContext) {
+
         self.preferredContentSize = (CGSize){
             .width = _tweetTextViewContainer.bounds.size.width,
             .height = self.contentViewHeight
