@@ -290,7 +290,7 @@ static void *TSETweetTextKVOCOntext = &TSETweetTextKVOCOntext;
 
     self.selectedAccount = _configuration.initiallySelectedAccount ?: _configuration.accounts.firstObject;
 
-    self.scrollView.alwaysBounceVertical = YES;
+    self.scrollView.bounces = false;
 
     if (@available(iOS 11.0, *)) {
         self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
@@ -350,7 +350,7 @@ static void *TSETweetTextKVOCOntext = &TSETweetTextKVOCOntext;
         [self.tweetTextViewContainer.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor].active = YES;
         [self.tweetTextViewContainer.topAnchor constraintEqualToAnchor:self.contentView.topAnchor].active = YES;
         [self.tweetTextViewContainer.widthAnchor constraintEqualToAnchor:self.contentView.widthAnchor].active = YES;
-
+        
         [self.tableView.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor].active = YES;
         [self.tableView.topAnchor constraintEqualToAnchor:self.tweetTextViewContainer.bottomAnchor].active = YES;
         [self.tableView.widthAnchor constraintEqualToAnchor:self.contentView.widthAnchor].active = YES;
